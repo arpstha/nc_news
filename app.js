@@ -16,7 +16,10 @@ app.use((error, request, response, next) => {
 
         response.status(error.status).send({msg:error.msg})
     }
-    next(error) // if error doesn't match move to next
+    else{
+
+        next(error) // if error doesn't match move to next
+    }
   
 });
   //for all other errors
