@@ -12,7 +12,7 @@ function getAllTopics(request,response,next){
 }
 
 function rejectRequest(request, response, next){
-   next({status : 400, msg:'Bad Request'});
+   next({status : 404, msg:'Not Found'});
 }
 
 module.exports = { getAllTopics, rejectRequest };

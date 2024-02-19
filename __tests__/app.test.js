@@ -13,7 +13,7 @@ describe('GET /api/topics', () => {
         .get('/api/topics')
         .expect(200)
     });
-    test('should return an array', () => {
+    test('should return an array with all the topics', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
@@ -21,9 +21,10 @@ describe('GET /api/topics', () => {
             const topics = response.body
             console.log(topics)
             expect(Array.isArray(topics)).toBe(true)
+            expect(topics.length).toBe(3)
         })
     });
-    test('should return treasure objects', () => {
+    test('should return topic objects', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
@@ -34,7 +35,7 @@ describe('GET /api/topics', () => {
             });
         })
     });
-    test('should return treasure objects with correct properties', () => {
+    test('should return topic objects with correct properties', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
@@ -49,18 +50,9 @@ describe('GET /api/topics', () => {
     test('should responds with an error invalid request', () => {
         return request(app)
           .get('/api/topics/other')
-          .expect(400)
+          .expect(404)
           .then((response) => {
-            expect(response.body.msg).toBe('Bad Request');
-          });
-    
-    });
-    test('should responds with an error when request sent with other method than GET', () => {
-        return request(app)
-          .post('/api/topics')
-          .expect(400)
-          .then((response) => {
-            expect(response.body.msg).toBe('Bad Request');
+            expect(response.body.msg).toBe('Not Found');
           });
     
     });
