@@ -58,7 +58,6 @@ describe('GET /api/topics', () => {
     });
 });
 
-
 describe('GET /api', () => {
     
         test('should return 200 status code if request is successful', () => {
@@ -74,6 +73,7 @@ describe('GET /api', () => {
         .then((response)=>{
             const resultEndPoints = response.body
             expect(typeof resultEndPoints).toBe('object')
+
             // expect(resultEndPoints).toEqual(endPointJson)
             
         })
@@ -125,3 +125,6 @@ describe('GET /api/articles/:article_id', () => {
     });
     
 });
+
+     
+

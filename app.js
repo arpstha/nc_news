@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
 const {getAllTopics, rejectRequest, getApi} = require('./controllers/topics.controller')
+
 const getArticleById = require('./controllers/articles.controller')
+
 
 app.use(express.json());
 
@@ -10,7 +12,9 @@ app.get('/api/topics/:invalid', rejectRequest);
 
 app.get('/api', getApi);
 
+
 app.get('/api/articles/:article_id', getArticleById)
+
 
 app.use((error, request, response, next) => {
        if (error.status && error.msg){

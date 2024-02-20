@@ -1,4 +1,7 @@
+
 const  selectAllTopics  = require('../models/topics.model')
+
+
 const endPoints = require('../endpoints.json')
 
 function getAllTopics(request,response,next){
@@ -11,6 +14,7 @@ function getAllTopics(request,response,next){
         next(error)
     })
 }
+
 
 function getApi(request, response, next){
     return response.status(200).send(endPoints)
