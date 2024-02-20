@@ -11,7 +11,6 @@ app.get('/api', getApi);
 
 
 app.use((error, request, response, next) => {
-    console.log(error)
        if (error.status && error.msg){
         response.status(error.status).send({msg:error.msg})
     }

@@ -19,7 +19,6 @@ describe('GET /api/topics', () => {
         .expect(200)
         .then((response)=>{
             const topics = response.body
-            console.log(topics)
             expect(Array.isArray(topics)).toBe(true)
             expect(topics.length).toBe(3)
         })
