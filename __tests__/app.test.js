@@ -24,7 +24,7 @@ describe('GET /api/topics', () => {
             expect(topics.length).toBe(3)
         })
     });
-    test('should return topic objects', () => {
+    test('should return an array with all topic objects', () => {
         return request(app)
         .get('/api/topics')
         .expect(200)
@@ -73,8 +73,7 @@ describe('GET /api', () => {
         .then((response)=>{
             const resultEndPoints = response.body
             expect(typeof resultEndPoints).toBe('object')
-
-            // expect(resultEndPoints).toEqual(endPointJson)
+            expect(resultEndPoints).toEqual(endPointJson)
             
         })
     });
@@ -96,7 +95,6 @@ describe('GET /api/articles/:article_id', () => {
         .expect(200)
         .then((response)=>{
             const article = response.body
-           
             expect(typeof article.author).toBe('string')
             expect(typeof article.title).toBe('string')
             expect(typeof article.article_id).toBe('number')
@@ -124,6 +122,76 @@ describe('GET /api/articles/:article_id', () => {
         })
     });
     
+});
+
+describe('GET /api/articles/:article_id/comments', () => {
+    test('should return an array of comments for given article_id with status 200 if successful', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then((response)=>{
+            const comments = response.body
+            expect(Array.isArray(comments)).toBe(true)
+        })
+    });
+    test('should return an array of comments with correct length', () => {
+        return request(app)
+        .get('/api/articles/3/comments')
+        .expect(200)
+        .then((response)=>{
+            expect(response.body.length).toBe(2)
+        })
+    });
+    test('array should contain comment objects with all the comment properties', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then((response)=>{
+           
+            const comments = response.body
+            comments.forEach((comment)=>{
+                expect(typeof comment.comment_id).toBe('number')
+                expect(typeof comment.votes).toBe('number')
+                expect(typeof comment.created_at).toBe('string')
+                expect(typeof comment.author).toBe('string')
+                expect(typeof comment.body).toBe('string')
+                expect(typeof comment.article_id).toBe('number')
+            })
+        })
+    });
+    test('comments should be sorted with the most recent comments first', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .expect(200)
+        .then((response)=>{
+            const comments = response.body
+            expect(comments).toBeSortedBy('comment_id',{descending : true}) 
+        })
+    });
+    test("should response with appropiate error message if provided article_id which doesn't exits", () => {
+        return request(app)
+        .get('/api/articles/1000/comments')
+        .expect(404)
+        .then((response)=>{ 
+            expect(response.body.msg).toBe('Not Found');
+        })
+    });
+    test("should response with appropiate error message if provided article_id doesn't have comments", () => {
+        return request(app)
+        .get('/api/articles/1000/comments')
+        .expect(404)
+        .then((response)=>{
+            expect(response.body.msg).toBe('Not Found');
+        })
+    });
+    test("should response with error message if invalid article_id is given", () => {
+        return request(app)
+        .get('/api/articles/notValid/comments')
+        .expect(400)
+        .then((response)=>{
+            expect(response.body.msg).toBe('Bad Request');
+        })
+    });
 });
 
      
