@@ -19,7 +19,6 @@ describe('GET /api/topics', () => {
         .expect(200)
         .then((response)=>{
             const topics = response.body
-            console.log(topics)
             expect(Array.isArray(topics)).toBe(true)
             expect(topics.length).toBe(3)
         })
@@ -57,3 +56,26 @@ describe('GET /api/topics', () => {
     
     });
 });
+
+const endPointJson = require('../endpoints.json')
+describe('GET /api', () => {
+    
+        test('should return 200 status code if request is successful', () => {
+            return request(app)
+            .get('/api/topics')
+            .expect(200)
+        });
+   
+    test('should return an object describing all the available endpoints', () => {
+        return request(app)
+        .get('/api')
+        .expect(200)
+        .then((response)=>{
+            const resultEndPoints = response.body
+            expect(typeof resultEndPoints).toBe('object')
+            expect(resultEndPoints).toEqual(endPointJson)
+            
+        })
+    });
+});
+
