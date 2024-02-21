@@ -18,4 +18,17 @@ function selectComByArticle_id(id){
         ORDER BY comment_id DESC;
     `, [id]);
 } 
-module.exports = { selectArticleById, selectComByArticle_id }
+
+function insertComByArticle_id(article_id, username, body, article,){
+   
+        const { votes, created_at} = article
+
+        return db
+        .query(
+          'INSERT INTO comments (body, article_id, author,votes,created_at) VALUES ($1, $2, $3, $4, $5) RETURNING *;',
+          [body, article_id, username, votes, created_at]
+        )
+
+    
+}
+module.exports = { selectArticleById, selectComByArticle_id, insertComByArticle_id }

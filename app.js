@@ -2,27 +2,34 @@ const express = require('express');
 const app = express();
 const {getAllTopics, rejectRequest, getApi} = require('./controllers/topics.controller')
 
-const { getArticleById, getComByArticle_id} = require('./controllers/articles.controller')
+const { getArticleById, getComByArticle_id, postComByArticle_id} = require('./controllers/articles.controller')
 
 
 app.use(express.json());
 
 app.get('/api/topics', getAllTopics);
-app.get('/api/topics/:invalid', rejectRequest);
 
 app.get('/api', getApi);
-
 
 app.get('/api/articles/:article_id', getArticleById)
 app.get('/api/articles/:article_id/comments', getComByArticle_id)
 
+app.post('/api/articles/:article_id/comments', postComByArticle_id)
 
+app.get('/*', rejectRequest); // rejects all other invalid requests
 app.use((error, request, response, next) => {
-       if (error.status && error.msg){
-        response.status(error.status).send({msg:error.msg})
+
+    //custom error
+    if (error.status && error.msg){
+       response.status(error.status).send({msg:error.msg})
     }
+    //Invalid endpoint
     else if (error.code === '22P02'){
         response.status(400).send({msg:'Bad Request'})
+    }
+    //Data missing
+    else if (error.code === '23502'){
+      response.status(400).send({msg:'Missing username or comment'})
     }
     else{
         next(error) // if error doesn't match move to next

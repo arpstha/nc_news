@@ -149,6 +149,7 @@ describe('GET /api/articles/:article_id/comments', () => {
         .then((response)=>{
            
             const comments = response.body
+            expect(comments.length).toBe(11)
             comments.forEach((comment)=>{
                 expect(typeof comment.comment_id).toBe('number')
                 expect(typeof comment.votes).toBe('number')
@@ -193,6 +194,62 @@ describe('GET /api/articles/:article_id/comments', () => {
         })
     });
 });
+
+describe('POST /api/articles/:article_id/comments', () => {
+    test('should return status 201 with posted comment object', () => {
+        const newComment = {
+        username : 'butter_bridge',
+        body: "This is beautiful but does this rings the bell? I certainly won't let it go"
+        };
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .expect(201)
+        .then((response) => {
+            expect(response.body.comment_id).toBe(19);
+            expect(response.body.author).toBe('butter_bridge');
+            expect(response.body.body).toBe("This is beautiful but does this rings the bell? I certainly won't let it go");
+            expect(response.body.article_id).toBe(1);
+            expect(response.body.votes).toBe(100);
+            expect(response.body.created_at).toBe('2020-07-09T20:11:00.000Z');
+        });
+    });
+    test('should responds with an appropriate status and error message when provided with no username', () => {
+        return request(app)
+          .post('/api/articles/1/comments')
+          .send({
+            body: 'This is where we all come together and clap.'
+          })
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe('Missing username or comment');
+          });
+      });
+    test('should responds with an appropriate status and error message when provided with no comment body', () => {
+        return request(app)
+          .post('/api/articles/1/comments')
+          .send({
+            username: 'butter_bridg'
+          })
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe('Missing username or comment');
+          });
+      });
+      test('should responds with an appropriate status and error message when provided with invalid article_id', () => {
+        const newComment = {
+            username : 'butter_bridge',
+            body: "This is beautiful but does this rings the bell? I certainly won't let it go"
+            };
+            return request(app)
+            .post('/api/articles/invalid/comments')
+            .send(newComment)
+            .expect(400)
+            .then((response) => {
+                expect(response.body.msg).toBe('Bad Request');
+          });
+      });
+  });
 
      
 
