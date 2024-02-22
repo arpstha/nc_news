@@ -22,18 +22,23 @@ app.patch('/api/articles/:article_id', patchVotesByArticle_id)
 app.get('/*', rejectRequest); // rejects all other invalid requests
 app.use((error, request, response, next) => {
 
-    //custom error
-    if (error.status && error.msg){
-       response.status(error.status).send({msg:error.msg})
-    }
+
+   
     //Invalid endpoint
-    else if (error.code === '22P02'){
+    if (error.code === '23503'){
         response.status(404).send({msg:'Not Found'})
     }
     //Data missing
     else if (error.code === '23502'){
-      response.status(400).send({msg:'Missing username or comment'})
+      response.status(400).send({msg:'Bad Request'})
     }
+    else if (error.code === '22P02'){
+      response.status(404).send({msg:'Not Found'})
+    }
+   //custom error
+    else if (error.status && error.msg){
+      response.status(error.status).send({msg:error.msg})
+   }
     else{
         next(error) // if error doesn't match move to next
     }
