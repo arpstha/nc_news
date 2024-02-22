@@ -88,7 +88,7 @@
     }
   },
   "PATCH /api/articles/:article_id": {
-    "description": "increment/decrement the article's vote property by article_id",
+    "description": "increments/decrements the article's vote property by article_id",
     "queries": [],
     "exampleResponse": {
       "article": [
@@ -104,5 +104,10 @@
         }
       ]
     }
-  }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the comment associated with the comment_id",
+    "queries": [],
+    "exampleResponse": {}
+    }
 }

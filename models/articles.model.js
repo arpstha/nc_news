@@ -38,4 +38,8 @@ function updateArticleByArticle_id(article){
         [votes, article_id]
         )
 }
-module.exports = { selectArticleById, selectComByArticle_id,insertComByArticle_id, updateArticleByArticle_id}
+function removeComByComment_id (comment_id){
+    return db.query('DELETE FROM comments WHERE comment_id = $1 RETURNING *;', [comment_id])
+    
+  };
+module.exports = { selectArticleById, selectComByArticle_id,insertComByArticle_id, updateArticleByArticle_id, removeComByComment_id}
