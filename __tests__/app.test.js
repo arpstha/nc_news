@@ -449,9 +449,30 @@ describe('PATCH /api/articles/:article_id', () => {
     });
 });
 
-});      
+}); 
 
+describe.only('DELETE /api/comments/:comment_id', () => {
+    test('should return status 204 with message No Content', () => {
+        return request(app)
+        .delete('/api/comments/3')
+        .expect(204)
+    });
+    test('should responds with an appropriate status and error message when given a non-existent id', () => {
+        return request(app)
+          .delete('/api/comments/500')
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe('Not Found');
+          });
+    });
+    test('should responds with an appropriate status and error message when given an invalid id', () => {
+        return request(app)
+          .delete('/api/comments/invalid_comment')
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe('Not Found');
+          });
+    });
+});
 
-
-     
 

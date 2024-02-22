@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const {getAllTopics, rejectRequest, getApi} = require('./controllers/topics.controller')
 
-const { getArticleById, getComByArticle_id, postComByArticle_id, patchVotesByArticle_id} = require('./controllers/articles.controller')
+const { getArticleById, getComByArticle_id, postComByArticle_id, patchVotesByArticle_id, deleteComByComment_id} = require('./controllers/articles.controller')
 
 
 app.use(express.json());
@@ -18,6 +18,8 @@ app.get('/api/articles/:article_id/comments', getComByArticle_id)
 app.post('/api/articles/:article_id/comments', postComByArticle_id)
 
 app.patch('/api/articles/:article_id', patchVotesByArticle_id)
+
+app.delete('/api/comments/:comment_id', deleteComByComment_id)
 
 app.get('/*', rejectRequest); // rejects all other invalid requests
 app.use((error, request, response, next) => {
