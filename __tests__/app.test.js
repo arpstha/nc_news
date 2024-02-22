@@ -474,7 +474,7 @@ describe('DELETE /api/comments/:comment_id', () => {
           });
     });
 });
-describe.only('GET /api/users', () => {
+describe('GET /api/users', () => {
     test('should return 200 status code if request is successful', () => {
         return request(app)
         .get('/api/users')
