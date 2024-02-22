@@ -116,9 +116,9 @@ describe('GET /api/articles/:article_id', () => {
     test("should response with error message if invalid article_id is given", () => {
         return request(app)
         .get('/api/articles/notValid')
-        .expect(404)
+        .expect(400)
         .then((response)=>{
-            expect(response.body.msg).toBe('Not Found');
+            expect(response.body.msg).toBe('Bad Request');
         })
     });
     
@@ -188,9 +188,9 @@ describe('GET /api/articles/:article_id/comments', () => {
     test("should response with error message if invalid article_id is given", () => {
         return request(app)
         .get('/api/articles/notValid/comments')
-        .expect(404)
+        .expect(400)
         .then((response)=>{
-            expect(response.body.msg).toBe('Not Found');
+            expect(response.body.msg).toBe('Bad Request');
         })
     });
 });
@@ -284,9 +284,9 @@ describe('POST /api/articles/:article_id/comments', () => {
             return request(app)
             .post('/api/articles/invalid/comments')
             .send(newComment)
-            .expect(404)
+            .expect(400)
             .then((response) => {
-                expect(response.body.msg).toBe('Not Found');
+                expect(response.body.msg).toBe('Bad Request');
         });
     });
     test('should responds with an appropriate status and error message when provided with valid article_id but no content in database', () => {
@@ -395,9 +395,9 @@ describe('PATCH /api/articles/:article_id', () => {
             return request(app)
             .patch('/api/articles/1')
             .send(newVote)
-            .expect(404)
+            .expect(400)
             .then((response) => {
-                expect(response.body.msg).toBe('Not Found');
+                expect(response.body.msg).toBe('Bad Request');
         });
     });
     test('should responds with an appropriate status and error message when provided with invalid article_id', () => {
@@ -405,9 +405,9 @@ describe('PATCH /api/articles/:article_id', () => {
             return request(app)
             .patch('/api/articles/invalid')
             .send(newVote)
-            .expect(404)
+            .expect(400)
             .then((response) => {
-                expect(response.body.msg).toBe('Not Found');
+                expect(response.body.msg).toBe('Bad Request');
         });
     });
     test('should responds with an appropriate status and error message when provided with article_id with no contents in database', () => {
@@ -423,9 +423,9 @@ describe('PATCH /api/articles/:article_id', () => {
     test('should responds with an appropriate status and error message when no information is sent along with request', () => {
             return request(app)
             .patch('/api/articles/1')
-            .expect(404)
+            .expect(400)
             .then((response) => {
-                expect(response.body.msg).toBe('Not Found');
+                expect(response.body.msg).toBe('Bad Request');
         });
     });
     test('should responds with an appropriate status and error message when no vote information is sent with request', () => {
@@ -433,9 +433,9 @@ describe('PATCH /api/articles/:article_id', () => {
             return request(app)
             .patch('/api/articles/1')
             .send(newVote)
-            .expect(404)
+            .expect(400)
             .then((response) => {
-                expect(response.body.msg).toBe('Not Found');
+                expect(response.body.msg).toBe('Bad Request');
         });
     });
     test('should responds with an appropriate status and error message provided with invalid endpoint and invalid data type', () => {
@@ -443,9 +443,9 @@ describe('PATCH /api/articles/:article_id', () => {
         return request(app)
         .patch('/api/articles/not_valid')
         .send(newVote)
-        .expect(404)
+        .expect(400)
         .then((response) => {
-            expect(response.body.msg).toBe('Not Found');
+            expect(response.body.msg).toBe('Bad Request');
     });
 });
 
@@ -468,9 +468,9 @@ describe('DELETE /api/comments/:comment_id', () => {
     test('should responds with an appropriate status and error message when given an invalid id', () => {
         return request(app)
           .delete('/api/comments/invalid_comment')
-          .expect(404)
+          .expect(400)
           .then((response) => {
-            expect(response.body.msg).toBe('Not Found');
+            expect(response.body.msg).toBe('Bad Request');
           });
     });
 });
