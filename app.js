@@ -4,6 +4,7 @@ const {getAllTopics, rejectRequest, getApi} = require('./controllers/topics.cont
 
 const { getArticleById, getComByArticle_id, postComByArticle_id, patchVotesByArticle_id, deleteComByComment_id} = require('./controllers/articles.controller')
 
+const { getAllUsers } = require('./controllers/user.controller')
 
 app.use(express.json());
 
@@ -20,6 +21,8 @@ app.post('/api/articles/:article_id/comments', postComByArticle_id)
 app.patch('/api/articles/:article_id', patchVotesByArticle_id)
 
 app.delete('/api/comments/:comment_id', deleteComByComment_id)
+
+app.get('/api/users', getAllUsers)
 
 app.get('/*', rejectRequest); // rejects all other invalid requests
 app.use((error, request, response, next) => {

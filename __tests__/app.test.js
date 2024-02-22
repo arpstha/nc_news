@@ -474,5 +474,55 @@ describe('DELETE /api/comments/:comment_id', () => {
           });
     });
 });
+describe.only('GET /api/users', () => {
+    test('should return 200 status code if request is successful', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+    });
+    test('should return an array with all the users', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then((response)=>{
+            const users = response.body
+            expect(Array.isArray(users)).toBe(true)
+            expect(users.length).toBe(4)
+        })
+    });
+    test('should return an array with all user objects', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then((response)=>{
+            const users = response.body
+            users.forEach(user => {
+                expect(typeof user).toBe('object')
+            });
+        })
+    });
+    test('should return user objects with correct properties', () => {
+        return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then((response)=>{
+            const users = response.body
+            users.forEach(user => {
+                expect(typeof user.username).toBe('string')
+                expect(typeof user.name).toBe('string')
+                expect(typeof user.avatar_url).toBe('string')
+            });
+        })
+    });
+    test('should responds with an error if given invalid endpoint ', () => {
+        return request(app)
+          .get('/api/users/other')
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe('Not Found');
+          });
+    
+    });
+});
 
 
