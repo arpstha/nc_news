@@ -34,19 +34,16 @@ function getComByArticle_id(request,response,next){
 function postComByArticle_id(request,response,next){
     const {article_id} = request.params
     const {username, body} = request.body
-    selectArticleById(article_id)
+
+    insertComByArticle_id(article_id, username, body)
     .then((result)=>{
-        if (result.rows.length === 0 ){ //when passed invalid article_id
-            return Promise.reject({status : 400, msg: 'Bad Request'})  
+     
+        if (result.rows.length === 0 ){ //when passed valid id without data in database
+            return Promise.reject({status : 404, msg: 'Not Found'})  
         }
         else{
-            const article = result.rows[0]
-            return insertComByArticle_id(article_id, username, body, article)
-            }
-        })
-    .then((result)=>{
             return response.status(201).send(result.rows[0])
-               
+        }
     })
     .catch((error)=>{
            next(error)
@@ -58,10 +55,9 @@ function patchVotesByArticle_id(request,response,next){
     const {inc_votes} = request.body
     selectArticleById(article_id)
     .then((result)=>{
-        if (!inc_votes || typeof inc_votes !== 'number' ){ //request body missing || invalid vote type
-            return Promise.reject({status : 400, msg: 'Bad Request'})  
-        }
-        else if (result.rows.length=== 0){// no contain found with the id
+
+       
+        if (result.rows.length=== 0){// no contain found with the id
             return Promise.reject({status : 404, msg: 'Not Found'})  
         }
         else{

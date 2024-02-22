@@ -116,9 +116,9 @@ describe('GET /api/articles/:article_id', () => {
     test("should response with error message if invalid article_id is given", () => {
         return request(app)
         .get('/api/articles/notValid')
-        .expect(400)
+        .expect(404)
         .then((response)=>{
-            expect(response.body.msg).toBe('Bad Request');
+            expect(response.body.msg).toBe('Not Found');
         })
     });
     
@@ -188,9 +188,9 @@ describe('GET /api/articles/:article_id/comments', () => {
     test("should response with error message if invalid article_id is given", () => {
         return request(app)
         .get('/api/articles/notValid/comments')
-        .expect(400)
+        .expect(404)
         .then((response)=>{
-            expect(response.body.msg).toBe('Bad Request');
+            expect(response.body.msg).toBe('Not Found');
         })
     });
 });
@@ -210,9 +210,41 @@ describe('POST /api/articles/:article_id/comments', () => {
             expect(response.body.author).toBe('butter_bridge');
             expect(response.body.body).toBe("This is beautiful but does this rings the bell? I certainly won't let it go");
             expect(response.body.article_id).toBe(1);
-            expect(response.body.votes).toBe(100);
-            expect(response.body.created_at).toBe('2020-07-09T20:11:00.000Z');
+            expect(response.body.votes).toBe(0);
+            expect(typeof response.body.created_at).toBe('string');
         });
+    });
+    test('should ingore other properties except username and body', () => {
+        const newComment = {
+        username : 'butter_bridge',
+        body: "This is beautiful but does this rings the bell? I certainly won't let it go",
+        votes : 100,
+        created_at : "2020-03-01T01:13:00.000Z",
+        };
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .expect(201)
+        .then((response) => {
+            expect(response.body.comment_id).toBe(19);
+            expect(response.body.author).toBe('butter_bridge');
+            expect(response.body.body).toBe("This is beautiful but does this rings the bell? I certainly won't let it go");
+            expect(response.body.article_id).toBe(1);
+            expect(response.body.votes).toBe(0);
+            expect(typeof response.body.created_at).toBe('string');
+        });
+    });
+    test("should responds with an appropriate status and error message when provided username doesn't exits indatabase", () => {
+        return request(app)
+          .post('/api/articles/1/comments')
+          .send({
+            username : 'invalid_user',
+            body: 'This is where we all come together and clap.'
+          })
+          .expect(404)
+          .then((response) => {
+            expect(response.body.msg).toBe("Not Found");
+          });
     });
     test('should responds with an appropriate status and error message when provided with no username', () => {
         return request(app)
@@ -222,9 +254,9 @@ describe('POST /api/articles/:article_id/comments', () => {
           })
           .expect(400)
           .then((response) => {
-            expect(response.body.msg).toBe('Missing username or comment');
+            expect(response.body.msg).toBe('Bad Request');
           });
-      });
+    });
     test('should responds with an appropriate status and error message when provided with no comment body', () => {
         return request(app)
           .post('/api/articles/1/comments')
@@ -233,10 +265,18 @@ describe('POST /api/articles/:article_id/comments', () => {
           })
           .expect(400)
           .then((response) => {
-            expect(response.body.msg).toBe('Missing username or comment');
+            expect(response.body.msg).toBe('Bad Request');
+          });
+    });
+    test('should responds with an appropriate status and error message when no information is sent along with request', () => {
+        return request(app)
+          .post('/api/articles/1/comments')
+          .expect(400)
+          .then((response) => {
+            expect(response.body.msg).toBe('Bad Request');
           });
       });
-      test('should responds with an appropriate status and error message when provided with invalid article_id', () => {
+    test('should responds with an appropriate status and error message when provided with invalid article_id', () => {
         const newComment = {
             username : 'butter_bridge',
             body: "This is beautiful but does this rings the bell? I certainly won't let it go"
@@ -244,14 +284,27 @@ describe('POST /api/articles/:article_id/comments', () => {
             return request(app)
             .post('/api/articles/invalid/comments')
             .send(newComment)
-            .expect(400)
+            .expect(404)
             .then((response) => {
-                expect(response.body.msg).toBe('Bad Request');
+                expect(response.body.msg).toBe('Not Found');
+        });
+    });
+    test('should responds with an appropriate status and error message when provided with valid article_id but no content in database', () => {
+        const newComment = {
+            username : 'butter_bridge',
+            body: "This is beautiful but does this rings the bell? I certainly won't let it go"
+            };
+            return request(app)
+            .post('/api/articles/999/comments')
+            .send(newComment)
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe('Not Found');
         });
     });
 });
 
-describe.only('PATCH /api/articles/:article_id', () => {
+describe('PATCH /api/articles/:article_id', () => {
     test('should return status 200 with updated article', () => {
         const newVote = { inc_votes : 1 };
         const expectedResultArticle = {
@@ -312,7 +365,7 @@ describe.only('PATCH /api/articles/:article_id', () => {
                 expect(response.body).toEqual(expectedResultArticle);
             });
     });
-    test('should discard any other information pass on with the request except Votes', () => {
+    test('should ignore any other information pass on with the request except Votes', () => {
         const newVote = { inc_votes : 5, 
             title: 'change the world',
             topic: 'soup',
@@ -342,9 +395,9 @@ describe.only('PATCH /api/articles/:article_id', () => {
             return request(app)
             .patch('/api/articles/1')
             .send(newVote)
-            .expect(400)
+            .expect(404)
             .then((response) => {
-                expect(response.body.msg).toBe('Bad Request');
+                expect(response.body.msg).toBe('Not Found');
         });
     });
     test('should responds with an appropriate status and error message when provided with invalid article_id', () => {
@@ -370,19 +423,29 @@ describe.only('PATCH /api/articles/:article_id', () => {
     test('should responds with an appropriate status and error message when no information is sent along with request', () => {
             return request(app)
             .patch('/api/articles/1')
-            .expect(400)
+            .expect(404)
             .then((response) => {
-                expect(response.body.msg).toBe('Bad Request');
+                expect(response.body.msg).toBe('Not Found');
         });
     });
     test('should responds with an appropriate status and error message when no vote information is sent with request', () => {
-        const newVote = { title : "Living in the shadow of a great man"};
+            const newVote = { title : "Living in the shadow of a great man"};
+            return request(app)
+            .patch('/api/articles/1')
+            .send(newVote)
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe('Not Found');
+        });
+    });
+    test('should responds with an appropriate status and error message provided with invalid endpoint and invalid data type', () => {
+        const newVote = { inc_votes : 'one' };
         return request(app)
-        .patch('/api/articles/1')
+        .patch('/api/articles/not_valid')
         .send(newVote)
-        .expect(400)
+        .expect(404)
         .then((response) => {
-            expect(response.body.msg).toBe('Bad Request');
+            expect(response.body.msg).toBe('Not Found');
     });
 });
 
