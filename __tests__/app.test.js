@@ -247,9 +247,148 @@ describe('POST /api/articles/:article_id/comments', () => {
             .expect(400)
             .then((response) => {
                 expect(response.body.msg).toBe('Bad Request');
-          });
-      });
-  });
+        });
+    });
+});
+
+describe.only('PATCH /api/articles/:article_id', () => {
+    test('should return status 200 with updated article', () => {
+        const newVote = { inc_votes : 1 };
+        const expectedResultArticle = {
+            article_id: 3,
+            title: 'Eight pug gifs that remind me of mitch',
+            topic: 'mitch',
+            author: 'icellusedkars',
+            body: 'some gifs',
+            created_at: '2020-11-03T09:12:00.000Z',
+            votes: 1,
+            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+          }
+            return request(app)
+            .patch('/api/articles/3')
+            .send(newVote)
+            .expect(200)
+            .then((response) => {
+                expect(response.body).toEqual(expectedResultArticle);
+            });
+    });
+    test("should increment the current article's vote correctly", () => {
+        const newVote = { inc_votes : 5 };
+        const expectedResultArticle = {
+            article_id: 1,
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T20:11:00.000Z',
+            votes: 105,
+            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+          }
+            return request(app)
+            .patch('/api/articles/1')
+            .send(newVote)
+            .expect(200)
+            .then((response) => {
+                expect(response.body).toEqual(expectedResultArticle);
+            });
+    });
+    test("should decrement the current article's vote correctly", () => {
+        const newVote = { inc_votes : -15 };
+        const expectedResultArticle = {
+            article_id: 1,
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T20:11:00.000Z',
+            votes: 85,
+            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+          }
+            return request(app)
+            .patch('/api/articles/1')
+            .send(newVote)
+            .expect(200)
+            .then((response) => {
+                expect(response.body).toEqual(expectedResultArticle);
+            });
+    });
+    test('should discard any other information pass on with the request except Votes', () => {
+        const newVote = { inc_votes : 5, 
+            title: 'change the world',
+            topic: 'soup',
+            author: 'lollipop',
+            body: 'pink elephant',
+            created_at: 'afternoon before evening',};
+        const expectedResultArticle = {
+            article_id: 3,
+            title: 'Eight pug gifs that remind me of mitch',
+            topic: 'mitch',
+            author: 'icellusedkars',
+            body: 'some gifs',
+            created_at: '2020-11-03T09:12:00.000Z',
+            votes: 5,
+            article_img_url: 'https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700'
+          }       
+            return request(app)
+            .patch('/api/articles/3')
+            .send(newVote)
+            .expect(200)
+            .then((response) => {
+                expect(response.body).toEqual(expectedResultArticle);
+            });
+    });
+    test('should responds with an appropriate status and error message when provided with invalid vote type', () => {
+        const newVote = { inc_votes : 'five' };
+            return request(app)
+            .patch('/api/articles/1')
+            .send(newVote)
+            .expect(400)
+            .then((response) => {
+                expect(response.body.msg).toBe('Bad Request');
+        });
+    });
+    test('should responds with an appropriate status and error message when provided with invalid article_id', () => {
+        const newVote = { inc_votes : 1 };
+            return request(app)
+            .patch('/api/articles/invalid')
+            .send(newVote)
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe('Not Found');
+        });
+    });
+    test('should responds with an appropriate status and error message when provided with article_id with no contents in database', () => {
+        const newVote = { inc_votes : 1 };
+            return request(app)
+            .patch('/api/articles/999')
+            .send(newVote)
+            .expect(404)
+            .then((response) => {
+                expect(response.body.msg).toBe('Not Found');
+        });
+    });
+    test('should responds with an appropriate status and error message when no information is sent along with request', () => {
+            return request(app)
+            .patch('/api/articles/1')
+            .expect(400)
+            .then((response) => {
+                expect(response.body.msg).toBe('Bad Request');
+        });
+    });
+    test('should responds with an appropriate status and error message when no vote information is sent with request', () => {
+        const newVote = { title : "Living in the shadow of a great man"};
+        return request(app)
+        .patch('/api/articles/1')
+        .send(newVote)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad Request');
+    });
+});
+
+});      
+
+
 
      
 
