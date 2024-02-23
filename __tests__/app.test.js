@@ -525,7 +525,7 @@ describe('GET /api/users', () => {
     });
 });
 
-describe.only('GET /api/articles(topic query)', () => {
+describe('GET /api/articles(topic query)', () => {
     test('should return an article array with status 200 if successful', () => {
         return request(app)
         .get('/api/articles')
