@@ -12,8 +12,8 @@ function getAllArticles(request, response, next){
 }
 
 function getArticleById(request,response,next){
-    const id = request.params.article_id
-    selectArticleById(id)
+    const { article_id }= request.params
+    selectArticleById(article_id)
     .then((result)=>{
         if (result.rows.length === 0){ //promise reject where article id doesn't exists
             return Promise.reject({status : 404, msg: 'Not Found'})

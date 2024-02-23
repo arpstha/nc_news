@@ -103,6 +103,7 @@ describe('GET /api/articles/:article_id', () => {
             expect(typeof article.created_at).toBe('string')
             expect(typeof article.votes).toBe('number')
             expect(typeof article.article_img_url).toBe('string')
+            expect(typeof article.comment_count).toBe('number')
         })
     });
     test("should response with appropiate error message if provided article_id which doesn't exits", () => {
@@ -148,6 +149,7 @@ describe('GET /api/articles/:article_id', () => {
             expect(typeof article.created_at).toBe('string')
             expect(typeof article.votes).toBe('number')
             expect(typeof article.article_img_url).toBe('string')
+            expect(typeof article.comment_count).toBe('number')
         })
     });
     test("should response with appropiate error message if provided article_id which doesn't exits", () => {
@@ -187,7 +189,6 @@ describe('GET /api/articles(topic query)', () => {
         .then((response)=>{
             const articles = response.body
             articles.forEach((article)=>{
-                console.log(article)
                 expect(typeof article.author).toBe('string')
                 expect(typeof article.title).toBe('string')
                 expect(typeof article.article_id).toBe('number')
