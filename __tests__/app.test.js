@@ -525,4 +525,79 @@ describe('GET /api/users', () => {
     });
 });
 
+describe.only('GET /api/articles(topic query)', () => {
+    test('should return an article array with status 200 if successful', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((response)=>{
+            const article = response.body
+            expect(Array.isArray(article)).toBe(true)
+        })
+    });
+    test('should return an article array with all the article properties', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((response)=>{
+            const articles = response.body
+            articles.forEach((article)=>{
+                expect(typeof article.author).toBe('string')
+                expect(typeof article.title).toBe('string')
+                expect(typeof article.article_id).toBe('number')
+                expect(typeof article.body).toBe('string')
+                expect(typeof article.topic).toBe('string')
+                expect(typeof article.created_at).toBe('string')
+                expect(typeof article.votes).toBe('number')
+                expect(typeof article.article_img_url).toBe('string')
+            })
+        })
+    });
+    test('should return an array of articles with correct length', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((response)=>{
+            expect(response.body.length).toBe(13)
+        })
+    });
+    test('should return all the articles with correct length related to the topic if query value is given', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then((response)=>{
+            const articles = response.body
+            expect(articles.length).toBe(12)
+        })
+    });
+    test('should only return all the articles related to that query topic', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then((response)=>{
+            const articles = response.body
+            articles.forEach((article)=>{
+                expect(article.topic).toBe('mitch')
+            })
+        })
+    });
+    test("should response with appropiate error message if provided topic doesn't relate to any articles", () => {
+        return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(404)
+        .then((response)=>{
+            expect(response.body.msg).toBe('Not Found');
+        })
+    });
+    test("should response with appropiate error message if provided topic doesn't exits in database", () => {
+        return request(app)
+        .get('/api/articles?topic=invalid')
+        .expect(404)
+        .then((response)=>{ 
+            expect(response.body.msg).toBe('Not Found');
+        })
+    });
+});
+
+
 

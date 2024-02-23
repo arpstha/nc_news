@@ -41,5 +41,16 @@ function updateArticleByArticle_id(article){
 function removeComByComment_id (comment_id){
     return db.query('DELETE FROM comments WHERE comment_id = $1 RETURNING *;', [comment_id])
     
-  };
-module.exports = { selectArticleById, selectComByArticle_id,insertComByArticle_id, updateArticleByArticle_id, removeComByComment_id}
+};
+
+function selectAllArticles(topic){
+    let queryStr = "SELECT * FROM articles";
+    const values = [];
+    if (topic) {
+        queryStr += " WHERE topic = $1";
+        values.push(topic);
+    }
+    return db.query(queryStr, values);
+}
+
+module.exports = { selectArticleById, selectComByArticle_id,insertComByArticle_id, updateArticleByArticle_id, removeComByComment_id, selectAllArticles}

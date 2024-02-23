@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const {getAllTopics, rejectRequest, getApi} = require('./controllers/topics.controller')
 
-const { getArticleById, getComByArticle_id, postComByArticle_id, patchVotesByArticle_id, deleteComByComment_id} = require('./controllers/articles.controller')
+const { getArticleById, getComByArticle_id, postComByArticle_id, patchVotesByArticle_id, deleteComByComment_id, getAllArticles} = require('./controllers/articles.controller')
 
 const { getAllUsers } = require('./controllers/user.controller')
 
@@ -23,6 +23,8 @@ app.patch('/api/articles/:article_id', patchVotesByArticle_id)
 app.delete('/api/comments/:comment_id', deleteComByComment_id)
 
 app.get('/api/users', getAllUsers)
+
+app.get('/api/articles', getAllArticles)
 
 app.get('/*', rejectRequest); // rejects all other invalid requests
 app.use((error, request, response, next) => {
