@@ -1,5 +1,28 @@
 const db = require('../db/connection')
 
+
+function selectAllArticles(topic){
+    const values = [];
+    let queryStr = `
+    SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INTEGER AS comment_count
+    FROM articles 
+    LEFT JOIN comments 
+    ON articles.article_id = comments.article_id`;
+    
+    if (topic) {
+        queryStr += ` WHERE topic LIKE $1
+        GROUP BY articles.article_id
+        ORDER BY articles.created_at DESC;`;
+        values.push(`%${topic}`); // Fixing the placeholder value
+    }
+    else {
+        queryStr += ` GROUP BY articles.article_id
+        ORDER BY articles.created_at DESC;`;
+    }
+    return db.query(queryStr, values);
+    
+}
+
 function selectArticleById(id){
     return db.query(`SELECT * 
     FROM articles 
@@ -43,14 +66,6 @@ function removeComByComment_id (comment_id){
     
 };
 
-function selectAllArticles(topic){
-    let queryStr = "SELECT * FROM articles";
-    const values = [];
-    if (topic) {
-        queryStr += " WHERE topic = $1";
-        values.push(topic);
-    }
-    return db.query(queryStr, values);
-}
+
 
 module.exports = { selectArticleById, selectComByArticle_id,insertComByArticle_id, updateArticleByArticle_id, removeComByComment_id, selectAllArticles}

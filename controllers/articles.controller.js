@@ -1,5 +1,16 @@
 const { selectArticleById, selectComByArticle_id, insertComByArticle_id, updateArticleByArticle_id, removeComByComment_id, selectAllArticles } = require('../models/articles.model')
 
+function getAllArticles(request, response, next){
+    const { topic } = request.query
+    selectAllArticles(topic)
+    .then((result)=>{
+        return response.status(200).send(result.rows)
+    })
+    .catch((error)=>{
+        next(error)
+    })
+}
+
 function getArticleById(request,response,next){
     const id = request.params.article_id
     selectArticleById(id)
@@ -91,21 +102,6 @@ function deleteComByComment_id(request, response, next){
     })
 }
 
-function getAllArticles (request, response, next){
-   const { topic } = request.query
-    selectAllArticles(topic)
-    .then((result)=>{
-        if (result.rows.length === 0){ //promise reject where articles doesn't exists
-            return Promise.reject({status : 404, msg: 'Not Found'})
-          }
-          else {
-              return response.status(200).send(result.rows)
-          }
-    })
-    .catch((error)=>{
-        next(error)
-    })
-}
 
 module.exports = { getArticleById, 
     getComByArticle_id, 

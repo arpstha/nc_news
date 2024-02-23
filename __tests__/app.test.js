@@ -124,62 +124,35 @@ describe('GET /api/articles/:article_id', () => {
     
 });
 
-describe('GET /api/articles/:article_id/comments', () => {
-    test('should return an array of comments for given article_id with status 200 if successful', () => {
+describe('GET /api/articles/:article_id', () => {
+    test('should return an article object with status 200 if successful', () => {
         return request(app)
-        .get('/api/articles/1/comments')
+        .get('/api/articles/1')
         .expect(200)
         .then((response)=>{
-            const comments = response.body
-            expect(Array.isArray(comments)).toBe(true)
+            const article = response.body
+            expect(typeof article).toBe('object')
         })
     });
-    test('should return an array of comments with correct length', () => {
+    test('should return an article object with all the article properties', () => {
         return request(app)
-        .get('/api/articles/3/comments')
+        .get('/api/articles/1')
         .expect(200)
         .then((response)=>{
-            expect(response.body.length).toBe(2)
-        })
-    });
-    test('array should contain comment objects with all the comment properties', () => {
-        return request(app)
-        .get('/api/articles/1/comments')
-        .expect(200)
-        .then((response)=>{
-           
-            const comments = response.body
-            expect(comments.length).toBe(11)
-            comments.forEach((comment)=>{
-                expect(typeof comment.comment_id).toBe('number')
-                expect(typeof comment.votes).toBe('number')
-                expect(typeof comment.created_at).toBe('string')
-                expect(typeof comment.author).toBe('string')
-                expect(typeof comment.body).toBe('string')
-                expect(typeof comment.article_id).toBe('number')
-            })
-        })
-    });
-    test('comments should be sorted with the most recent comments first', () => {
-        return request(app)
-        .get('/api/articles/1/comments')
-        .expect(200)
-        .then((response)=>{
-            const comments = response.body
-            expect(comments).toBeSortedBy('comment_id',{descending : true}) 
+            const article = response.body
+            expect(typeof article.author).toBe('string')
+            expect(typeof article.title).toBe('string')
+            expect(typeof article.article_id).toBe('number')
+            expect(typeof article.body).toBe('string')
+            expect(typeof article.topic).toBe('string')
+            expect(typeof article.created_at).toBe('string')
+            expect(typeof article.votes).toBe('number')
+            expect(typeof article.article_img_url).toBe('string')
         })
     });
     test("should response with appropiate error message if provided article_id which doesn't exits", () => {
         return request(app)
-        .get('/api/articles/1000/comments')
-        .expect(404)
-        .then((response)=>{ 
-            expect(response.body.msg).toBe('Not Found');
-        })
-    });
-    test("should response with appropiate error message if provided article_id doesn't have comments", () => {
-        return request(app)
-        .get('/api/articles/1000/comments')
+        .get('/api/articles/1000')
         .expect(404)
         .then((response)=>{
             expect(response.body.msg).toBe('Not Found');
@@ -187,10 +160,80 @@ describe('GET /api/articles/:article_id/comments', () => {
     });
     test("should response with error message if invalid article_id is given", () => {
         return request(app)
-        .get('/api/articles/notValid/comments')
+        .get('/api/articles/notValid')
         .expect(400)
         .then((response)=>{
             expect(response.body.msg).toBe('Bad Request');
+        })
+    });
+    
+});
+
+describe('GET /api/articles(topic query)', () => {
+    test('should return an article array with status 200 with correct length', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((response)=>{
+            const article = response.body
+            expect(Array.isArray(article)).toBe(true)
+            expect(article.length).toBe(13)
+        })
+    });
+    test('should return array of article objects with all the article properties', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((response)=>{
+            const articles = response.body
+            articles.forEach((article)=>{
+                console.log(article)
+                expect(typeof article.author).toBe('string')
+                expect(typeof article.title).toBe('string')
+                expect(typeof article.article_id).toBe('number')
+                expect(typeof article.topic).toBe('string')
+                expect(typeof article.created_at).toBe('string')
+                expect(typeof article.votes).toBe('number')
+                expect(typeof article.article_img_url).toBe('string')
+                expect(typeof article.comment_count).toBe('number')
+            })
+        })
+    });
+    test('should return all the articles sorted by date in descending order.',()=>{
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+        .then((response)=>{
+            const articles = response.body
+            expect(articles).toBeSortedBy('created_at', {descending: true})
+        })
+    });
+    test('should return all the articles with correct lenght if optional query "topic" is made', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then((response)=>{
+            const articles = response.body
+            expect(articles.length).toBe(12)
+        })
+    });
+    test('should only return all the articles related to that query topic', () => {
+        return request(app)
+        .get('/api/articles?topic=mitch')
+        .expect(200)
+        .then((response)=>{
+            const articles = response.body
+            articles.forEach((article)=>{
+                expect(article.topic).toBe('mitch')
+            })
+        })
+    });
+    test("should response status 200 and an empty array if provided topic doesn't relate to any articles", () => {
+        return request(app)
+        .get('/api/articles?topic=paper')
+        .expect(200)
+        .then((response)=>{
+            expect(response.body).toEqual([]);
         })
     });
 });
@@ -524,80 +567,4 @@ describe('GET /api/users', () => {
     
     });
 });
-
-describe('GET /api/articles(topic query)', () => {
-    test('should return an article array with status 200 if successful', () => {
-        return request(app)
-        .get('/api/articles')
-        .expect(200)
-        .then((response)=>{
-            const article = response.body
-            expect(Array.isArray(article)).toBe(true)
-        })
-    });
-    test('should return an article array with all the article properties', () => {
-        return request(app)
-        .get('/api/articles')
-        .expect(200)
-        .then((response)=>{
-            const articles = response.body
-            articles.forEach((article)=>{
-                expect(typeof article.author).toBe('string')
-                expect(typeof article.title).toBe('string')
-                expect(typeof article.article_id).toBe('number')
-                expect(typeof article.body).toBe('string')
-                expect(typeof article.topic).toBe('string')
-                expect(typeof article.created_at).toBe('string')
-                expect(typeof article.votes).toBe('number')
-                expect(typeof article.article_img_url).toBe('string')
-            })
-        })
-    });
-    test('should return an array of articles with correct length', () => {
-        return request(app)
-        .get('/api/articles')
-        .expect(200)
-        .then((response)=>{
-            expect(response.body.length).toBe(13)
-        })
-    });
-    test('should return all the articles with correct length related to the topic if query value is given', () => {
-        return request(app)
-        .get('/api/articles?topic=mitch')
-        .expect(200)
-        .then((response)=>{
-            const articles = response.body
-            expect(articles.length).toBe(12)
-        })
-    });
-    test('should only return all the articles related to that query topic', () => {
-        return request(app)
-        .get('/api/articles?topic=mitch')
-        .expect(200)
-        .then((response)=>{
-            const articles = response.body
-            articles.forEach((article)=>{
-                expect(article.topic).toBe('mitch')
-            })
-        })
-    });
-    test("should response with appropiate error message if provided topic doesn't relate to any articles", () => {
-        return request(app)
-        .get('/api/articles?topic=paper')
-        .expect(404)
-        .then((response)=>{
-            expect(response.body.msg).toBe('Not Found');
-        })
-    });
-    test("should response with appropiate error message if provided topic doesn't exits in database", () => {
-        return request(app)
-        .get('/api/articles?topic=invalid')
-        .expect(404)
-        .then((response)=>{ 
-            expect(response.body.msg).toBe('Not Found');
-        })
-    });
-});
-
-
 

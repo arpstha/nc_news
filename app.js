@@ -12,6 +12,8 @@ app.get('/api/topics', getAllTopics);
 
 app.get('/api', getApi);
 
+app.get('/api/articles', getAllArticles)
+
 app.get('/api/articles/:article_id', getArticleById)
 
 app.get('/api/articles/:article_id/comments', getComByArticle_id)
@@ -23,8 +25,6 @@ app.patch('/api/articles/:article_id', patchVotesByArticle_id)
 app.delete('/api/comments/:comment_id', deleteComByComment_id)
 
 app.get('/api/users', getAllUsers)
-
-app.get('/api/articles', getAllArticles)
 
 app.get('/*', rejectRequest); // rejects all other invalid requests
 app.use((error, request, response, next) => {
