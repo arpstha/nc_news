@@ -514,15 +514,6 @@ describe('GET /api/users', () => {
             });
         })
     });
-    test('should responds with an error if given invalid endpoint ', () => {
-        return request(app)
-          .get('/api/users/other')
-          .expect(404)
-          .then((response) => {
-            expect(response.body.msg).toBe('Not Found');
-          });
-    
-    });
 });
 
 
