@@ -125,47 +125,56 @@ describe('GET /api/articles/:article_id', () => {
     
 });
 
-describe('GET /api/articles/:article_id', () => {
-    test('should return an article object with status 200 if successful', () => {
+describe('GET /api/articles/:article_id/comments', () => {
+    test('should return status 200 with an array of comments objects', () => {
         return request(app)
-        .get('/api/articles/1')
+        .get('/api/articles/1/comments')
         .expect(200)
         .then((response)=>{
-            const article = response.body
-            expect(typeof article).toBe('object')
+            const comments = response.body
+            expect(Array.isArray(comments)).toBe(true)
+            expect(comments.length).toBe(11)
         })
     });
-    test('should return an article object with all the article properties', () => {
+    test('should return an array of comments with objects with all the required properties', () => {
         return request(app)
-        .get('/api/articles/1')
+        .get('/api/articles/1/comments')
         .expect(200)
         .then((response)=>{
-            const article = response.body
-            expect(typeof article.author).toBe('string')
-            expect(typeof article.title).toBe('string')
-            expect(typeof article.article_id).toBe('number')
-            expect(typeof article.body).toBe('string')
-            expect(typeof article.topic).toBe('string')
-            expect(typeof article.created_at).toBe('string')
-            expect(typeof article.votes).toBe('number')
-            expect(typeof article.article_img_url).toBe('string')
-            expect(typeof article.comment_count).toBe('number')
+            const comments = response.body
+            comments.forEach((comment)=>{
+                expect(typeof comment.comment_id).toBe('number')
+                expect(typeof comment.votes).toBe('number')
+                expect(typeof comment.created_at).toBe('string')
+                expect(typeof comment.author).toBe('string')
+                expect(typeof comment.body).toBe('string')
+                expect(typeof comment.article_id).toBe('number')
+
+            })
         })
     });
-    test("should response with appropiate error message if provided article_id which doesn't exits", () => {
+    test("should response with empty array if article_id doesn't exits", () => {
         return request(app)
-        .get('/api/articles/1000')
-        .expect(404)
+        .get('/api/articles/1000/comments')
+        .expect(200)
         .then((response)=>{
-            expect(response.body.msg).toBe('Not Found');
+            expect(response.body.length).toBe(0);
         })
     });
     test("should response with error message if invalid article_id is given", () => {
         return request(app)
-        .get('/api/articles/notValid')
+        .get('/api/articles/notValid/comments')
         .expect(400)
         .then((response)=>{
             expect(response.body.msg).toBe('Bad Request');
+        })
+    });
+    test("should response with an empty array if the article_id doesn't have comments", () => {
+        return request(app)
+        .get('/api/articles/2/comments')
+        .expect(200)
+        .then((response)=>{
+            expect(response.body.length).toBe(0);
         })
     });
     

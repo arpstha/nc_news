@@ -28,15 +28,10 @@ function getArticleById(request,response,next){
 }
 
 function getComByArticle_id(request,response,next){
-    const id = request.params.article_id
-    selectComByArticle_id(id)
+    const { article_id } = request.params
+    selectComByArticle_id(article_id)
     .then((result)=>{
-        if (result.rows.length === 0){ //promise reject where article id doesn't exists
-            return Promise.reject({status : 404, msg: 'Not Found'})
-          }
-        else{
-            return response.status(200).send(result.rows)
-        }
+        return response.status(200).send(result.rows)
     })
     .catch((error)=>{
         next(error)
