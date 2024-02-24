@@ -1,6 +1,5 @@
 const db = require('../db/connection')
 
-
 function selectAllArticles(topic){
     const values = [];
     let queryStr = `
@@ -13,14 +12,13 @@ function selectAllArticles(topic){
         queryStr += ` WHERE topic LIKE $1
         GROUP BY articles.article_id
         ORDER BY articles.created_at DESC;`;
-        values.push(`%${topic}`); // Fixing the placeholder value
+        values.push(`%${topic}`);
     }
     else {
         queryStr += ` GROUP BY articles.article_id
         ORDER BY articles.created_at DESC;`;
     }
     return db.query(queryStr, values);
-    
 }
 
 function selectArticleById(article_id){
@@ -32,9 +30,8 @@ function selectArticleById(article_id){
         WHERE articles.article_id = $1
         GROUP BY articles.article_id
         ;`,[article_id])
-   
-    
 }
+
 function selectComByArticle_id(id){
     return db.query(`
         SELECT comments.comment_id, comments.votes, comments.created_at, comments.author, comments.body, comments.article_id 
@@ -43,16 +40,16 @@ function selectComByArticle_id(id){
         ON articles.article_id = comments.article_id
         WHERE articles.article_id = $1
         ORDER BY comment_id DESC;
-    `, [id]);
+        `, [id]);
 } 
 
 function insertComByArticle_id(article_id, username, body){
   
-    return db
-    .query(
-      'INSERT INTO comments (body, article_id, author) VALUES ($1, $2, $3) RETURNING *;',
-      [body, article_id, username]
-    )
+    return db.query(
+        `INSERT INTO comments (body, article_id, author) 
+        VALUES ($1, $2, $3) RETURNING *;`,
+        [body, article_id, username]
+        )
 }
 
 function updateArticleByArticle_id(article){
@@ -66,8 +63,10 @@ function updateArticleByArticle_id(article){
         )
 }
 function removeComByComment_id (comment_id){
-    return db.query('DELETE FROM comments WHERE comment_id = $1 RETURNING *;', [comment_id])
-    
+    return db.query(`
+        DELETE FROM comments 
+        WHERE comment_id = $1 
+        RETURNING *;`, [comment_id])
 };
 
 
