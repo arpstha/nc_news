@@ -1,10 +1,14 @@
 const express = require('express');
 const app = express();
-const {getAllTopics, rejectRequest, getApi} = require('./controllers/topics.controller')
+const cors = require('cors');
 
-const { getArticleById, getComByArticle_id, postComByArticle_id, patchVotesByArticle_id, deleteComByComment_id, getAllArticles} = require('./controllers/articles.controller')
+app.use(cors());
 
-const { getAllUsers } = require('./controllers/user.controller')
+const {getAllTopics, rejectRequest, getApi} = require('./controllers/topics.controller');
+
+const { getArticleById, getComByArticle_id, postComByArticle_id, patchVotesByArticle_id, deleteComByComment_id, getAllArticles} = require('./controllers/articles.controller');
+
+const { getAllUsers } = require('./controllers/user.controller');
 
 app.use(express.json());
 
@@ -12,19 +16,19 @@ app.get('/api/topics', getAllTopics);
 
 app.get('/api', getApi);
 
-app.get('/api/articles', getAllArticles)
+app.get('/api/articles', getAllArticles);
 
-app.get('/api/articles/:article_id', getArticleById)
+app.get('/api/articles/:article_id', getArticleById);
 
-app.get('/api/articles/:article_id/comments', getComByArticle_id)
+app.get('/api/articles/:article_id/comments', getComByArticle_id);
 
-app.post('/api/articles/:article_id/comments', postComByArticle_id)
+app.post('/api/articles/:article_id/comments', postComByArticle_id);
 
-app.patch('/api/articles/:article_id', patchVotesByArticle_id)
+app.patch('/api/articles/:article_id', patchVotesByArticle_id);
 
-app.delete('/api/comments/:comment_id', deleteComByComment_id)
+app.delete('/api/comments/:comment_id', deleteComByComment_id);
 
-app.get('/api/users', getAllUsers)
+app.get('/api/users', getAllUsers);
 
 app.get('/*', rejectRequest); // rejects all other invalid requests
 app.use((error, request, response, next) => {
