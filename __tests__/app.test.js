@@ -59,10 +59,9 @@ describe('GET /api/topics', () => {
 });
 
 describe('GET /api', () => {
-    
         test('should return 200 status code if request is successful', () => {
             return request(app)
-            .get('/api/topics')
+            .get('/api')
             .expect(200)
         });
    
@@ -568,4 +567,5 @@ describe('GET /api/users', () => {
         })
     });
 });
+
 

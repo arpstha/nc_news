@@ -4,4 +4,9 @@ function selectAllUsers(){
     return db.query(`SELECT * FROM users;`)
 }
 
-module.exports = { selectAllUsers }
+function selectUserByUsername( username ){
+    return db.query(`SELECT * FROM users WHERE username = $1;`,[username]);
+}
+
+
+module.exports = { selectAllUsers, selectUserByUsername }

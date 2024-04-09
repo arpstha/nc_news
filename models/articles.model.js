@@ -1,6 +1,6 @@
 const db = require('../db/connection')
 
-function selectAllArticles(topic){
+function selectAllArticles(topic,sort_by){
     const values = [];
     let queryStr = `
         SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INTEGER AS comment_count
